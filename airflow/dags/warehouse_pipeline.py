@@ -31,6 +31,16 @@ with DAG(
         bash_command="cd /opt/airflow/scripts && python silver_transformations.py",
     )
 
+    scd = BashOperator(
+        task_id="scd_processing",
+        bash_command="cd /opt/airflow/scripts && python scd.py --type 2",
+    )
+
+    star_schema = BashOperator(
+        task_id="star_schema_transformations",
+        bash_command="cd /opt/airflow/scripts && python star_schema_transformations.py",
+    )
+
     gold = BashOperator(
         task_id="gold_transformations",
         bash_command="cd /opt/airflow/scripts && python gold_transformations.py",
@@ -46,4 +56,4 @@ with DAG(
         bash_command="cd /opt/airflow/scripts && python gx_validation.py",
     )
 
-    [ingest, ingest_api] >> silver >> gold >> validation >> gx_validation
+    [ingest, ingest_api] >> silver >> scd >> star_schema >> gold >> validation >> gx_validation

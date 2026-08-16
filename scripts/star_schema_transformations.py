@@ -12,20 +12,36 @@ Tables Created & Loaded:
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
+
+# Add scripts directory to sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 from utils.db import get_connection
 
-SQL_FILE = Path(__file__).resolve().parent.parent / "sql" / "gold" / "04_star_schema.sql"
+POTENTIAL_SQL_PATHS = [
+    Path(__file__).resolve().parent.parent / "sql" / "gold" / "04_star_schema.sql",
+    Path("/opt/airflow/sql/gold/04_star_schema.sql"),
+    Path("sql/gold/04_star_schema.sql"),
+    Path("../sql/gold/04_star_schema.sql"),
+]
+
+
+def resolve_sql_file() -> Path:
+    for p in POTENTIAL_SQL_PATHS:
+        if p.exists():
+            return p
+    raise FileNotFoundError(f"Star schema SQL file not found in any of: {[str(p) for p in POTENTIAL_SQL_PATHS]}")
 
 
 def run_star_schema_etl() -> dict[str, int]:
     """Executes the Star Schema DDL and population script, returning table row counts."""
     print("Starting Gold Dimensional Star Schema transformation...")
-    
-    if not SQL_FILE.exists():
-        raise FileNotFoundError(f"Star schema SQL file not found: {SQL_FILE}")
+    sql_file = resolve_sql_file()
+    print(f"Using SQL definition from: {sql_file}")
 
-    with open(SQL_FILE, "r", encoding="utf-8") as f:
+    with open(sql_file, "r", encoding="utf-8") as f:
         sql_script = f.read()
 
     conn = get_connection()
@@ -71,7 +87,7 @@ def main():
     print("\n--- Star Schema Load Summary ---")
     for tbl, count in counts.items():
         print(f"  {tbl}: {count:,}")
-    
+
     if counts.get("orphan_records", 0) == 0:
         print("\n[SUCCESS] All foreign keys and referential integrity constraints validated with 0 orphan records.")
     else:

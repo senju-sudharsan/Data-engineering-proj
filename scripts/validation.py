@@ -27,7 +27,28 @@ VALIDATIONS = [
      "SELECT COUNT(*) FROM gold.product_performance"),
 
     ("Gold Seller Performance",
-     "SELECT COUNT(*) FROM gold.seller_performance")
+     "SELECT COUNT(*) FROM gold.seller_performance"),
+
+    ("Silver Customers SCD",
+     "SELECT COUNT(*) FROM silver.customers_scd"),
+
+    ("Gold Dim Date",
+     "SELECT COUNT(*) FROM gold.dim_date"),
+
+    ("Gold Dim Customer",
+     "SELECT COUNT(*) FROM gold.dim_customer"),
+
+    ("Gold Dim Product",
+     "SELECT COUNT(*) FROM gold.dim_product"),
+
+    ("Gold Dim Seller",
+     "SELECT COUNT(*) FROM gold.dim_seller"),
+
+    ("Gold Dim Payment",
+     "SELECT COUNT(*) FROM gold.dim_payment"),
+
+    ("Gold Fact Sales",
+     "SELECT COUNT(*) FROM gold.fact_sales")
 ]
 
 
